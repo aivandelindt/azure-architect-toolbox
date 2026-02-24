@@ -17,6 +17,9 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
     },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest"
+    },
     "ghcr.io/devcontainers/features/github-cli:1": {
       "version": "latest"
     },
@@ -42,11 +45,14 @@
         "ms-vscode.powershell",
         "ms-python.python",
         "ms-vscode.azurecli",
+        "hashicorp.terraform",
         "yzhang.markdown-all-in-one",
         "bierner.markdown-mermaid",
         "bierner.markdown-preview-github-styles",
         "davidanson.vscode-markdownlint",
         "esbenp.prettier-vscode",
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
         "mechatroner.rainbow-csv",
         "redhat.vscode-yaml",
         "mutantdino.resourcemonitor",

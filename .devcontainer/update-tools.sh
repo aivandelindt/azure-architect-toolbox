@@ -43,6 +43,24 @@ else
     FAILURES+=("markdownlint-cli2")
 fi
 
+# Update tflint
+echo "📦 Updating tflint..."
+if curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | sudo bash >/dev/null 2>&1; then
+    echo "   ✅ tflint updated"
+else
+    echo "   ⚠️  tflint update had issues"
+    FAILURES+=("tflint")
+fi
+
+# Update tfsec
+echo "📦 Updating tfsec..."
+if curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | sudo bash >/dev/null 2>&1; then
+    echo "   ✅ tfsec updated"
+else
+    echo "   ⚠️  tfsec update had issues"
+    FAILURES+=("tfsec")
+fi
+
 # Summary
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -62,5 +80,7 @@ echo "📊 Current tool versions:"
 printf "   %-15s %s\n" "Azure CLI:" "$(az version --query '\"azure-cli\"' -o tsv 2>/dev/null || echo 'unknown')"
 printf "   %-15s %s\n" "Bicep:" "$(az bicep version 2>/dev/null || echo 'unknown')"
 printf "   %-15s %s\n" "Checkov:" "$(checkov --version 2>/dev/null || echo 'unknown')"
+printf "   %-15s %s\n" "tflint:" "$(tflint --version 2>/dev/null | head -n1 || echo 'unknown')"
+printf "   %-15s %s\n" "tfsec:" "$(tfsec --version 2>/dev/null | head -n1 || echo 'unknown')"
 printf "   %-15s %s\n" "Python:" "$(python3 --version 2>/dev/null || echo 'unknown')"
 echo ""

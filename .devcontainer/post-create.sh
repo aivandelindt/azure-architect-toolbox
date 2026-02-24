@@ -3,7 +3,7 @@ set -e
 
 # ─── Progress Tracking Helpers ───────────────────────────────────────────────
 
-TOTAL_STEPS=10
+TOTAL_STEPS=11
 CURRENT_STEP=0
 SETUP_START=$(date +%s)
 STEP_START=0
@@ -133,7 +133,40 @@ pwsh -NoProfile -Command "
     }
 " && step_done "PowerShell modules installed" || step_warn "PowerShell module installation incomplete"
 
-# ─── Step 6: MCP Server check ────────────────────────────────────────
+# ─── Step 6: Terraform security/lint tools ───────────────────────────────────
+
+step_start "🧩" "Installing Terraform lint/security tools (tflint, tfsec)..."
+INSTALL_WARN=0
+
+if command -v tflint >/dev/null 2>&1; then
+    echo "        tflint already installed"
+else
+    if curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | sudo bash >/dev/null 2>&1; then
+        echo "        tflint installed"
+    else
+        echo "        tflint installation failed"
+        INSTALL_WARN=1
+    fi
+fi
+
+if command -v tfsec >/dev/null 2>&1; then
+    echo "        tfsec already installed"
+else
+    if curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | sudo bash >/dev/null 2>&1; then
+        echo "        tfsec installed"
+    else
+        echo "        tfsec installation failed"
+        INSTALL_WARN=1
+    fi
+fi
+
+if [ "$INSTALL_WARN" -eq 0 ]; then
+    step_done "Terraform lint/security tools ready"
+else
+    step_warn "Some Terraform lint/security tools failed to install"
+fi
+
+# ─── Step 7: MCP Server check ────────────────────────────────────────
 
 step_start "💰" "Checking for MCP Servers..."
 # (Simplified from original as this repo might not have the same MCP path yet)
@@ -143,7 +176,7 @@ else
     step_done "No local MCP servers to configure"
 fi
 
-# ─── Step 7: Python dependencies (authoritative) ─────────────────────────────
+# ─── Step 8: Python dependencies (authoritative) ─────────────────────────────
 
 step_start "📦" "Verifying Python dependencies..."
 if [ -f "${PWD}/requirements.txt" ]; then
@@ -153,7 +186,7 @@ else
     step_done "No requirements.txt found"
 fi
 
-# ─── Step 8: Azure CLI defaults ──────────────────────────────────────────────
+# ─── Step 9: Azure CLI defaults ──────────────────────────────────────────────
 
 step_start "☁️ " "Configuring Azure CLI..."
 if az config set defaults.location=swedencentral --only-show-errors 2>/dev/null; then
@@ -163,7 +196,7 @@ else
     step_warn "Azure CLI config skipped (not authenticated)"
 fi
 
-# ─── Step 9: Final verification ─────────────────────────────────
+# ─── Step 10: Final verification ─────────────────────────────────
 
 step_start "🔍" "Verifying installations..."
 
@@ -172,6 +205,9 @@ printf "        %-15s %s\n" "Bicep:" "$(az bicep version 2>/dev/null | head -n1 
 printf "        %-15s %s\n" "PowerShell:" "$(pwsh --version 2>/dev/null || echo '❌ not installed')"
 printf "        %-15s %s\n" "Python:" "$(python3 --version 2>/dev/null || echo '❌ not installed')"
 printf "        %-15s %s\n" "Node.js:" "$(node --version 2>/dev/null || echo '❌ not installed')"
+printf "        %-15s %s\n" "Terraform:" "$(terraform version -json 2>/dev/null | python3 -c "import json,sys; print(json.load(sys.stdin).get('terraform_version','unknown'))" || echo '❌ not installed')"
+printf "        %-15s %s\n" "tflint:" "$(tflint --version 2>/dev/null | head -n1 || echo '❌ not installed')"
+printf "        %-15s %s\n" "tfsec:" "$(tfsec --version 2>/dev/null | head -n1 || echo '❌ not installed')"
 printf "        %-15s %s\n" "GitHub CLI:" "$(gh --version 2>/dev/null | head -n1 || echo '❌ not installed')"
 printf "        %-15s %s\n" "uv:" "$(uv --version 2>/dev/null || echo '❌ not installed')"
 printf "        %-15s %s\n" "Pandoc:" "$(pandoc --version 2>/dev/null | head -n1 || echo '❌ not installed')"
