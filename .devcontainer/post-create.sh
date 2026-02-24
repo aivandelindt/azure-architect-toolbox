@@ -3,7 +3,7 @@ set -e
 
 # ─── Progress Tracking Helpers ───────────────────────────────────────────────
 
-TOTAL_STEPS=9
+TOTAL_STEPS=10
 CURRENT_STEP=0
 SETUP_START=$(date +%s)
 STEP_START=0
@@ -65,11 +65,18 @@ fi
 
 # ─── Step 2: npm global tools ────────────────────────────────────────────────
 
-step_start "📦" "Installing global tools (markdownlint-cli2, @mermaid-js/mermaid-cli)..."
-if sudo npm install -g markdownlint-cli2 @mermaid-js/mermaid-cli --loglevel=warn 2>&1 | tail -2; then
+step_start "📦" "Installing global tools (markdownlint-cli2, @mermaid-js/mermaid-cli, playwright)..."
+if sudo npm install -g markdownlint-cli2 @mermaid-js/mermaid-cli playwright --loglevel=warn 2>&1 | tail -2; then
     step_done "Global tools installed"
 else
     step_warn "Global install had issues"
+fi
+
+step_start "🎭" "Installing Playwright Chromium browser..."
+if playwright install chromium --with-deps 2>&1 | tail -2; then
+    step_done "Playwright Chromium installed"
+else
+    step_warn "Playwright Chromium installation had issues"
 fi
 
 # ─── Step 3: Directories & Git ───────────────────────────────────────────────
