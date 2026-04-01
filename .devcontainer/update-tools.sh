@@ -1,7 +1,18 @@
 #!/bin/bash
 set -e
 
+# Platform detection
+ARCH=$(uname -m)
+OS=$(uname -s)
+case "$ARCH" in
+    x86_64)  ARCH_LABEL="amd64" ;;
+    aarch64) ARCH_LABEL="arm64" ;;
+    arm64)   ARCH_LABEL="arm64" ;;
+    *)       ARCH_LABEL="$ARCH" ;;
+esac
+
 echo "🔄 Updating development tools..."
+echo "   Platform: $OS/$ARCH ($ARCH_LABEL)"
 echo ""
 
 # Track failures

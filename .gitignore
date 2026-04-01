@@ -4,6 +4,7 @@
 # Explicitly allow necessary project files
 !README.md
 !.gitignore
+!.gitattributes
 !.devcontainer/
 !.devcontainer/**
 !.github/

@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# ─── Platform Detection ──────────────────────────────────────────────────────
+
+ARCH=$(uname -m)
+OS=$(uname -s)
+case "$ARCH" in
+    x86_64)  ARCH_LABEL="amd64" ;;
+    aarch64) ARCH_LABEL="arm64" ;;
+    arm64)   ARCH_LABEL="arm64" ;;
+    *)       ARCH_LABEL="$ARCH" ;;
+esac
+
 # ─── Progress Tracking Helpers ───────────────────────────────────────────────
 
 TOTAL_STEPS=11
@@ -43,7 +54,7 @@ step_fail() {
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo " 🚀 Agentic InfraOps — Dev Container Setup"
-echo "    $TOTAL_STEPS steps · $(date '+%H:%M:%S')"
+echo "    $TOTAL_STEPS steps · $(date '+%H:%M:%S') · $OS/$ARCH ($ARCH_LABEL)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Log output to file for debugging
@@ -139,23 +150,25 @@ step_start "🧩" "Installing Terraform lint/security tools (tflint, tfsec)..."
 INSTALL_WARN=0
 
 if command -v tflint >/dev/null 2>&1; then
-    echo "        tflint already installed"
+    echo "        tflint already installed ($(tflint --version 2>/dev/null | head -n1))"
 else
+    echo "        Detecting architecture for tflint: $ARCH_LABEL"
     if curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | sudo bash >/dev/null 2>&1; then
         echo "        tflint installed"
     else
-        echo "        tflint installation failed"
+        echo "        tflint installation failed (arch: $ARCH_LABEL)"
         INSTALL_WARN=1
     fi
 fi
 
 if command -v tfsec >/dev/null 2>&1; then
-    echo "        tfsec already installed"
+    echo "        tfsec already installed ($(tfsec --version 2>/dev/null | head -n1))"
 else
+    echo "        Detecting architecture for tfsec: $ARCH_LABEL"
     if curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | sudo bash >/dev/null 2>&1; then
         echo "        tfsec installed"
     else
-        echo "        tfsec installation failed"
+        echo "        tfsec installation failed (arch: $ARCH_LABEL)"
         INSTALL_WARN=1
     fi
 fi
@@ -200,6 +213,7 @@ fi
 
 step_start "🔍" "Verifying installations..."
 
+printf "        %-15s %s\n" "Platform:" "$OS/$ARCH ($ARCH_LABEL)"
 printf "        %-15s %s\n" "Azure CLI:" "$(az --version 2>/dev/null | head -n1 || echo '❌ not installed')"
 printf "        %-15s %s\n" "Bicep:" "$(az bicep version 2>/dev/null | head -n1 || echo '❌ not installed')"
 printf "        %-15s %s\n" "PowerShell:" "$(pwsh --version 2>/dev/null || echo '❌ not installed')"

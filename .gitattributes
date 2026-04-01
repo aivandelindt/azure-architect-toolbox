@@ -1,0 +1,46 @@
+# Cross-platform line ending normalization
+# Ensures LF in the repo and on checkout, regardless of OS or user git config
+
+# Default: auto-detect text files and normalize to LF
+* text=auto eol=lf
+
+# Shell scripts — always LF
+*.sh text eol=lf
+
+# Config and data files — always LF
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.toml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.env text eol=lf
+
+# Source code — always LF
+*.py text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.ps1 text eol=lf
+*.psm1 text eol=lf
+*.psd1 text eol=lf
+*.tf text eol=lf
+*.bicep text eol=lf
+*.hcl text eol=lf
+
+# Git and CI config — always LF
+.gitattributes text eol=lf
+.gitignore text eol=lf
+Dockerfile text eol=lf
+
+# Binary files — no normalization
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
